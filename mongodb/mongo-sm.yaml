@@ -1,0 +1,9 @@
+# db-secret.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: db-secret
+type: Opaque
+data:
+  DB_USERNAME: bXl1c2Vy
+  DB_PASSWORD: bXlwYXNzd29yZA==

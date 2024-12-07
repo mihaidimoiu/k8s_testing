@@ -1,0 +1,7 @@
+# app-configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+data:
+  PORT: "5000"           # Default App port

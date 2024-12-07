@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flask-deployment
+  labels:
+    app: flask-deployment
+spec:
+  replicas: 3  # Number of replicas
+  selector:
+    matchLabels:
+      app: flask-deployment
+  template:
+    metadata:
+      labels:
+        app: flask-deployment
+    spec:
+      containers:
+        - name: flask-app
+          image: flask_app:latest
+          imagePullPolicy: Never
+          resources:
+            requests:
+              memory: "100Mi"
+              cpu: "1"
+            limits:
+              memory: "200Mi"
+              cpu: "2"
+          ports:
+            - containerPort: 5000  # Flask app internal port
+          env:
+            - name: DB_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: db-config
+                  key: DB_URL
+            - name: DB_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: db-config
+                  key: DB_PORT
+            - name: PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: PORT
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
