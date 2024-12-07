@@ -215,6 +215,6 @@ if [ "$REBUILD" = "true" ]; then
 fi
 
 # Build the images
-build_image "nginx_proxy" "$NGINX_DIR" "$NGINX_TAG"
 build_image "mongodb" "$MONGODB_DIR" "$MONGODB_TAG"
 build_image "flask_app" "$FLASK_DIR" "$FLASK_TAG"
+build_image "nginx_proxy" "$NGINX_DIR" "$NGINX_TAG"

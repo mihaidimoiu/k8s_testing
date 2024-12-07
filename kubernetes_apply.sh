@@ -11,7 +11,7 @@ REDEPLOY=false
 
 MONGODB_DIR="./mongodb"
 FLASK_DIR="./web_server"
-NGINX_FILE="./nginx/nginx-deployment.yaml"
+NGINX_DIR="./nginx"
 
 usage() {
     cat <<EOF
@@ -134,14 +134,14 @@ KUBE_OPTS=""
 [ "$DRY_RUN" = "true" ] && KUBE_OPTS="$KUBE_OPTS --dry-run=server"
 
 RESOURCES="
-$MONGODB_DIR/mongo-deployment.yaml
+$MONGODB_DIR/mongo-pod.yaml
 $MONGODB_DIR/mongo-service.yaml
 $MONGODB_DIR/mongo-pvc.yaml
 $MONGODB_DIR/mongo-pv.yaml
 $MONGODB_DIR/mongo-sm.yaml
 $MONGODB_DIR/mongo-cm.yaml
-$NGINX_FILE
-$FLASK_DIR/deployment-app.yaml
+$NGINX_DIR/nginx.yaml
+$FLASK_DIR/app.yaml
 $FLASK_DIR/app-cm.yaml
 "
 
