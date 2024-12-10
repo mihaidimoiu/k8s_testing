@@ -3,7 +3,7 @@
 2. Revert changes back to docker after stopping minikube: `alias hostdocker="unset DOCKER_HOST DOCKER_TLS_VERIFY DOCKER_CERT_PATH"`
 
 # Run docker compose with existing docker files
-1. Change in `./nginx/nginx.conf` the line with reverse proxy from `proxy_pass http://localhost:${PORT};` to `proxy_pass http://flask_app:${PORT};` in order to make it work only on Docker.
+1. Change in `./nginx/nginx.conf` the line with *proxy_pass* from `proxy_pass http://flask-service:${PORT};` to `proxy_pass http://flask_app:${PORT};` in order to make it work only on Docker.
 
 # Run with minikube backed by Docker
 1. Check if Docker is running. If not start Docker or Docker Desktop
@@ -15,3 +15,7 @@
 # Cleaning images and fresh rebuild
 1. Run `docker_build.sh` script with argument `-c` for cleaning the images or `-r` to clean and rebuild fresh.
 2. Run `kubernetes_apply.sh` script with argument `-c` for cleaning the images or `-r` to clean and rebuild fresh.
+
+# Access minikube on docker
+1. Make a port forward to the docker using `kubectl port-forward <pod_name> 80`
+2. Expose the service using `kubectl expose` 

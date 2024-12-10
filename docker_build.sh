@@ -177,7 +177,7 @@ remove_image() {
 
 clean_docker_resources() {
     # List of images to process
-    IMAGES="nginx mongodb flask_app"
+    IMAGES="nginx_proxy mongodb flask_app"
     for IMAGE in $IMAGES; do
         remove_related_resources "$IMAGE"
         remove_image "$IMAGE"
@@ -205,6 +205,8 @@ build_image() {
 if [ "$CLEAN" = "true" ] && [ "$REBUILD" = "false" ]; then
     log "Performing clean..."
     clean_docker_resources
+    docker ps
+    docker images
     exit 0
 fi
 
@@ -212,9 +214,12 @@ fi
 if [ "$REBUILD" = "true" ]; then
     log "Performing clean before building..."
     clean_docker_resources
+    docker ps
+    docker images
 fi
 
 # Build the images
-build_image "nginx_proxy" "$NGINX_DIR" "$NGINX_TAG"
 build_image "mongodb" "$MONGODB_DIR" "$MONGODB_TAG"
 build_image "flask_app" "$FLASK_DIR" "$FLASK_TAG"
+build_image "nginx_proxy" "$NGINX_DIR" "$NGINX_TAG"
+log "All images built successfully."

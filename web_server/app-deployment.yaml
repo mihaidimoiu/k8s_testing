@@ -14,6 +14,10 @@ spec:
       labels:
         app: flask-deployment
     spec:
+      initContainers:
+        - name: wait-for-mongo
+          image: appropriate/curl
+          command: ['sh', '-c', 'until nc -zv mongodb-service 27017; do echo "waiting for mongo..."; sleep 5; done']
       containers:
         - name: flask-app
           image: flask_app:latest

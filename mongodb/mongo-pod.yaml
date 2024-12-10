@@ -4,11 +4,12 @@ kind: Pod
 metadata:
   name: mongodb-pod
   labels:
-    app: mongodb
+    app: mongodb-pod
 spec:
   containers:
     - name: mongodb
-      image: mongo:latest  # Use a specific version if needed
+      image: mongodb:latest  # Use a specific version if needed
+      imagePullPolicy: Never  # Use the local image
       ports:
         - containerPort: 27017
       resources:

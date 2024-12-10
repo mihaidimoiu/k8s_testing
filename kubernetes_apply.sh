@@ -11,7 +11,7 @@ REDEPLOY=false
 
 MONGODB_DIR="./mongodb"
 FLASK_DIR="./web_server"
-NGINX_FILE="./nginx/nginx-deployment.yaml"
+NGINX_DIR="./nginx"
 
 usage() {
     cat <<EOF
@@ -127,7 +127,7 @@ check_path() {
 
 check_path "$MONGODB_DIR"
 check_path "$FLASK_DIR"
-check_path "$NGINX_FILE"
+check_path "$NGINX_DIR"
 
 KUBE_OPTS=""
 [ -n "$NAMESPACE" ] && KUBE_OPTS="$KUBE_OPTS --namespace=$NAMESPACE"
@@ -135,13 +135,14 @@ KUBE_OPTS=""
 
 RESOURCES="
 $MONGODB_DIR/mongo-deployment.yaml
-$MONGODB_DIR/mongo-service.yaml
+$MONGODB_DIR/mongo-deployment-service.yaml
 $MONGODB_DIR/mongo-pvc.yaml
 $MONGODB_DIR/mongo-pv.yaml
 $MONGODB_DIR/mongo-sm.yaml
 $MONGODB_DIR/mongo-cm.yaml
-$NGINX_FILE
-$FLASK_DIR/deployment-app.yaml
+$NGINX_DIR/nginx-pod.yaml
+$FLASK_DIR/app-deployment.yaml
+$FLASK_DIR/app-deployment-service.yaml
 $FLASK_DIR/app-cm.yaml
 "
 
@@ -165,6 +166,7 @@ if [ "$CLEAN" = "true" ] && [ "$REDEPLOY" = "false" ]; then
     log "Performing clean..."
     delete_resources
     log "Clean completed."
+    kubectl get all
     exit 0
 fi
 
@@ -175,6 +177,7 @@ if [ "$REDEPLOY" = "true" ]; then
     # Now apply after delete
     apply_resources
     log "Redeploy completed."
+    kubectl get all
     exit 0
 fi
 
@@ -183,3 +186,4 @@ fi
 log "Applying resources..."
 apply_resources
 log "All resources applied successfully."
+kubectl get all
