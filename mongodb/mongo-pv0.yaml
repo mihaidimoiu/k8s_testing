@@ -1,0 +1,14 @@
+
+# mongodb-pv.yaml
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: mongodb-pv0
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  hostPath:  # Using hostPath for local storage in Minikube
+    path: /data/mongodb-0

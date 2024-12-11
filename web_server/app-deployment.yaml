@@ -51,3 +51,9 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.name
+            - name: MONGO_REPLICA_SET_ENABLED
+              value: "true"
+            - name: MONGO_REPLICA_SET_NAME
+              value: "rs0"
+            - name: MONGO_REPLICA_COUNT
+              value: "3"

@@ -134,10 +134,11 @@ KUBE_OPTS=""
 [ "$DRY_RUN" = "true" ] && KUBE_OPTS="$KUBE_OPTS --dry-run=server"
 
 RESOURCES="
-$MONGODB_DIR/mongo-deployment.yaml
-$MONGODB_DIR/mongo-deployment-service.yaml
-$MONGODB_DIR/mongo-pvc.yaml
-$MONGODB_DIR/mongo-pv.yaml
+$MONGODB_DIR/mongo-stateful.yaml
+$MONGODB_DIR/mongo-headless-service.yaml
+$MONGODB_DIR/mongo-pv0.yaml
+$MONGODB_DIR/mongo-pv1.yaml
+$MONGODB_DIR/mongo-pv2.yaml
 $MONGODB_DIR/mongo-sm.yaml
 $MONGODB_DIR/mongo-cm.yaml
 $NGINX_DIR/nginx-pod.yaml
@@ -159,6 +160,11 @@ delete_resources() {
         # Using --ignore-not-found to avoid errors if resource doesn't exist
         kubectl delete $KUBE_OPTS --ignore-not-found=true -f "$RESOURCE_FILE"
     done
+
+    # After deleting the main resources, also delete PVCs created by the StatefulSet
+    log "Deleting PVCs associated with MongoDB..."
+    # Assuming PVCs are labeled with app=mongodb, or you can manually specify known PVC names
+    kubectl delete $KUBE_OPTS pvc -l app=mongodb --ignore-not-found=true || true
 }
 
 # Clean only: delete resources and exit
@@ -166,7 +172,7 @@ if [ "$CLEAN" = "true" ] && [ "$REDEPLOY" = "false" ]; then
     log "Performing clean..."
     delete_resources
     log "Clean completed."
-    kubectl get all
+    kubectl get all $KUBE_OPTS
     exit 0
 fi
 
@@ -177,7 +183,7 @@ if [ "$REDEPLOY" = "true" ]; then
     # Now apply after delete
     apply_resources
     log "Redeploy completed."
-    kubectl get all
+    kubectl get all $KUBE_OPTS
     exit 0
 fi
 
@@ -186,4 +192,4 @@ fi
 log "Applying resources..."
 apply_resources
 log "All resources applied successfully."
-kubectl get all
+kubectl get all $KUBE_OPTS
