@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: config-svc
+  labels:
+    app: mongoconfig
+spec:
+  clusterIP: None
+  selector:
+    role: configserver
+  ports:
+    - name: mongodb
+      port: 27017

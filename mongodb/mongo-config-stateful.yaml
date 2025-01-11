@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mongo-config
+  labels:
+    role: configserver
+spec:
+  replicas: 3
+  serviceName: "config-svc"
+  selector:
+    matchLabels:
+      role: configserver
+  template:
+    metadata:
+      labels:
+        role: configserver
+    spec:
+      containers:
+        - name: mongod
+          image: mongodb:latest  # Use a specific version if needed
+          imagePullPolicy: Never  # Use the local image
+          args: ["--configsvr", "--replSet", "csRS", "--bind_ip_all"]
+          ports:
+            - containerPort: 27017
+          volumeMounts:
+            - name: configdata
+              mountPath: /data/db
+  volumeClaimTemplates:
+    - metadata:
+        name: configdata
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 1Gi
