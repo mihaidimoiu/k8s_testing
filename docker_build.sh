@@ -175,7 +175,7 @@ remove_image() {
     fi
 }
 
-IMAGES="nginx_proxy mongodb flask_app"
+IMAGES="nginx_proxy mongodb flask_app appropriate/curl"
 
 clean_docker_resources() {
     # List of images to process

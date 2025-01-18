@@ -1,0 +1,8 @@
+# db-configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: db-config
+data:
+  DB_URL: "mongodb-service"  # Mongo Hostname
+  DB_PORT: "27017"           # Default MongoDB port

@@ -24,10 +24,10 @@ spec:
           imagePullPolicy: Never
           resources:
             requests:
-              memory: "100Mi"
+              memory: "256Mi"
               cpu: "1"
             limits:
-              memory: "200Mi"
+              memory: "1Gi"
               cpu: "2"
           ports:
             - containerPort: 5000  # Flask app internal port
@@ -51,9 +51,9 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.name
-            - name: MONGO_REPLICA_SET_ENABLED
-              value: "true"
-            - name: MONGO_REPLICA_SET_NAME
-              value: "rs0"
-            - name: MONGO_REPLICA_COUNT
-              value: "3"
+            # - name: MONGO_REPLICA_SET_ENABLED
+            #   value: "true"
+            # - name: MONGO_REPLICA_SET_NAME
+            #   value: "rs0"
+            # - name: MONGO_REPLICA_COUNT
+            #   value: "3"
