@@ -8,6 +8,9 @@ app = Flask(__name__)
 use_local = True
 db = None
 pod_name = None
+app_version = os.getenv("APP_VERSION", "unknown")  # New env var for version
+app_name = os.getenv("APP_NAME", "unknown")        # New env var for name
+
 
 # MongoDB connection setup
 def connect_to_mongo(mongo_uri, retries=5, delay=5):
@@ -24,6 +27,7 @@ def connect_to_mongo(mongo_uri, retries=5, delay=5):
     # If we reach here, all retries failed
     print("Could not connect to MongoDB after multiple retries.")
     return None
+
 
 def build_mongo_uri():
     user = os.getenv("MONGO_USER", None)
@@ -58,6 +62,7 @@ def build_mongo_uri():
 
     return mongo_uri
 
+
 def login():
     global use_local, db, pod_name
     pod_name = os.getenv("POD_NAME", "unknown")
@@ -70,8 +75,9 @@ def login():
     else:
         use_local = True
 
-# Local counter fallback
+
 local_count = 0
+
 
 @app.route('/')
 def hello():
@@ -82,11 +88,18 @@ def hello():
         record = db.visits.find_one({"_id": "counter"}) or {"_id": "counter", "count": 0}
         record["count"] += 1
         db.visits.update_one({"_id": "counter"}, {"$set": record}, upsert=True)
-        return f'Hello World! I have been seen {record["count"]} times. Pod name: {pod_name}.\n'
+        return (
+            f'Hello World! I have been seen {record["count"]} times.\n'
+            f'Pod name: {pod_name}, App: {app_name}, Version: {app_version}.\n'
+        )
     else:
         # Fallback to local counter
         local_count += 1
-        return f'Hello World! I have been seen {local_count} times (local fallback).\n'
+        return (
+            f'Hello World! I have been seen {local_count} times (local fallback).\n'
+            f'Pod name: {pod_name}, App: {app_name}, Version: {app_version}.\n'
+        )
+
 
 @app.route('/status')
 def status():
@@ -94,11 +107,29 @@ def status():
         # Check the database connection
         try:
             db.command("ping")
-            return jsonify({"status": "ok", "database": "connected", "pod_name": pod_name})
+            return jsonify({
+                "status": "ok",
+                "database": "connected",
+                "pod_name": pod_name,
+                "app_name": app_name,
+                "app_version": app_version
+            })
         except Exception as e:
-            return jsonify({"status": "error", "database": str(e), "pod_name": pod_name}), 500
+            return jsonify({
+                "status": "error",
+                "database": str(e),
+                "pod_name": pod_name,
+                "app_name": app_name,
+                "app_version": app_version
+            }), 500
     else:
-        return jsonify({"status": "ok", "database": "local fallback"}), 200
+        return jsonify({
+            "status": "ok",
+            "database": "local fallback",
+            "app_name": app_name,
+            "app_version": app_version
+        }), 200
+
 
 if __name__ == '__main__':
     login()
