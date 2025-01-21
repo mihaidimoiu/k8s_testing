@@ -47,3 +47,18 @@
 # View Kubernetes dashboard
 1. Enable Metrics Addon using the following command `minikube addons enable metrics-server`.
 2. Start Dashboard using this command `minikube dashboard`.
+
+# View logs
+1. View logs from a pod: `kubectl logs <pod_name>`.
+2. View logs from a pod on a specific container: `kubectl logs <pod_name> -c <container_name>`.
+3. Stream logs to console: `kubectl logs -f <pod_name>`.
+4. Get last 20 logs: `kubectl logs --tail=20 <pod_name>`.
+5. Get last 10 seconds of logs: `kubectl logs --since=10s <pod_name>`.
+6. Get logs from pods with specific label: `kubectl logs -l app=backend --all-containers=true`.
+
+# Debug commands:
+1. Get pod as YAML file: `kubectl get pod <pod_name> -o yaml`.
+2. Describe pod details: `kubectl describe pod <pod_name>`.
+3. Get deployment: `kubectl get deployment <deployment_name> -o wide`.
+4. Create a debug copy of the app: `kubectl debug myapp --it --copy-to=myapp-debug --container=myapp -sh`.
+5. Connect to a pod: `kubectl exec <pod_name> -it -- sh`.
