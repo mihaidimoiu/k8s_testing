@@ -1,0 +1,77 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flask-deployment
+  labels:
+    app: flask-deployment
+    version: blue
+spec:
+  replicas: 3  # Number of replicas
+  selector:
+    matchLabels:
+      app: flask-deployment
+      version: blue
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1  # Max pods that can be unavailable during update
+      maxSurge: 1        # Max extra pods above desired replicas during update
+  template:
+    metadata:
+      labels:
+        app: flask-deployment
+        version: blue
+    spec:
+      initContainers:
+        - name: wait-for-mongo
+          image: appropriate/curl
+          command: ['sh', '-c', 'until nc -zv mongodb-service 27017; do echo "waiting for mongo..."; sleep 5; done']
+      containers:
+        - name: flask-app
+          image: flask_app:v1.0
+          imagePullPolicy: Never
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "1"
+            limits:
+              memory: "1Gi"
+              cpu: "2"
+          ports:
+            - containerPort: 5000  # Flask app internal port
+          livenessProbe:
+            httpGet:
+              path: /status
+              port: 5000
+            initialDelaySeconds: 3
+            periodSeconds: 3
+          env:
+            - name: DB_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: db-config
+                  key: DB_URL
+            - name: DB_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: db-config
+                  key: DB_PORT
+            - name: PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: PORT
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: APP_NAME
+              value: "FlaskApp - Blue Deployment"
+            - name: APP_VERSION
+              value: "v1.0"
+            # - name: MONGO_REPLICA_SET_ENABLED
+            #   value: "true"
+            # - name: MONGO_REPLICA_SET_NAME
+            #   value: "rs0"
+            # - name: MONGO_REPLICA_COUNT
+            #   value: "3"

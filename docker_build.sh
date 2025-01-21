@@ -1,5 +1,4 @@
 #!/usr/bin/env sh
-
 set -e
 
 # Default tags
@@ -33,115 +32,64 @@ Options:
     -f, --force-pull        Always attempt to pull the latest base image
     -q, --quiet             Disable verbose output
     -h, --help              Print this help message and exit
-
-Examples:
-    $0 --nginx-tag 1.21 --mongodb-tag 5.0 --flask-tag 2.0 -n -f
-    $0 -c --no-cache --force-pull
-    $0 -r --force-pull
-    $0 -h
 EOF
 }
 
-# Pre-parse long options that might appear before short-options block
-for arg in "$@"; do
-    case "$arg" in
-        --help)
-            usage
-            exit 0
-            ;;
-    esac
-done
-
-# Include 'r' in the getopts string for rebuild option
-while getopts "hnfqcr" opt; do
-    case "$opt" in
-        h)
-            usage
-            exit 0
-            ;;
-        n)
-            NO_CACHE=true
-            ;;
-        f)
-            FORCE_PULL=true
-            ;;
-        q)
-            VERBOSE=false
-            ;;
-        c)
-            CLEAN=true
-            ;;
-        r)
-            REBUILD=true
-            ;;
-        *)
-            usage
-            exit 1
-            ;;
-    esac
-done
-
-# Shift out the processed short options
-shift $((OPTIND-1))
-
-# Parse any remaining long options manually
+# SINGLE LOOP for both short & long options
 while [ $# -gt 0 ]; do
     case "$1" in
+        -h|--help)
+            usage
+            exit 0
+            ;;
+        -n|--no-cache)
+            NO_CACHE=true
+            ;;
+        -f|--force-pull)
+            FORCE_PULL=true
+            ;;
+        -q|--quiet)
+            VERBOSE=false
+            ;;
+        -c|--clean)
+            CLEAN=true
+            ;;
+        -r|--rebuild)
+            REBUILD=true
+            ;;
         --nginx-tag)
-            NGINX_TAG="$2"
-            shift 2
+            shift
+            NGINX_TAG="$1"
             ;;
         --mongodb-tag)
-            MONGODB_TAG="$2"
-            shift 2
+            shift
+            MONGODB_TAG="$1"
             ;;
         --flask-tag)
-            FLASK_TAG="$2"
-            shift 2
-            ;;
-        --no-cache)
-            NO_CACHE=true
             shift
+            FLASK_TAG="$1"
             ;;
-        --force-pull)
-            FORCE_PULL=true
-            shift
-            ;;
-        --clean)
-            CLEAN=true
-            shift
-            ;;
-        --rebuild)
-            REBUILD=true
-            shift
-            ;;
-        --quiet)
-            VERBOSE=false
-            shift
-            ;;
-        *)
-            # Unknown option
+        -*)
+            # Unknown short/long option
             echo "Unknown option: $1"
             usage
             exit 1
             ;;
+        *)
+            # Positional arguments, if any. Break or store them.
+            break
+            ;;
     esac
+    shift
 done
 
-# Check Docker installation
-if ! command -v docker >/dev/null 2>&1; then
-    echo "Error: docker is not installed or not available in the PATH."
-    exit 1
-fi
-
+# Then the rest of your build logic:
 BUILD_OPTS=""
 [ "$NO_CACHE" = "true" ] && BUILD_OPTS="$BUILD_OPTS --no-cache"
 [ "$FORCE_PULL" = "true" ] && BUILD_OPTS="$BUILD_OPTS --pull"
 
 log() {
-    if [ "$VERBOSE" = "true" ]; then
-        echo "$@"
-    fi
+    [ "$VERBOSE" = "true" ] && echo "$@"
 }
 
 # Cleaning functions

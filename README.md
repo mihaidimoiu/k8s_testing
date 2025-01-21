@@ -21,8 +21,29 @@
 2. Expose the service using `kubectl expose`.
 
 # Deployment
+## Blue/Green
 1. Apply with `./kubernetes_apply.sh` first deployment.
 2. Apply 2nd deployment using `kubectl -f apply web_server/deployment/app-deployment-green.yaml`
 3. Edit the service `kubectl edit services flask-deployment` and change the version to `green`, to point to 2nd deployment.
 4. Use `kubectl port-forward` to verify it works.
 5. And magically it should use the 2nd deployment. After everything works, change the public service to point to the `green deployment`.
+
+## Canary
+*TODO*
+
+# Rolling update
+1. Build 2 docker images using `docker_build.sh` with `--nginx-tag v1.0` and `--nginx-tag v2.0`.
+2. Change in `kubernetes_apply.sh` line with `app-deployment.yaml` to `app-deployment-rolling-update.yaml`. This is just changing the image pull version and strategy to update.
+3. Use command `kubectl set image deployment/flask-deployment flask-app=flask_app:v2.0` to change to v2.0.
+4. To see the status use command `kubectl rollout status deployment/flask-deployment`.
+5. To Rollback use command `kubectl rollout undo deployment/flask-deployment`.
+6. To view history use command `kubectl rollout history deployment/flask-deployment --revision=2`.
+
+# Connect to minikube
+1. Use command `minikube sh` in order to connect to Docker container that runs minikube. 
+2. Use `ls /etc/kubernetes/manifest` to see everything that Kubernetes have.
+3. You can also use `kubectl proxy 8001` and then curl to that to see all the groups and APIs.
+
+# View Kubernetes dashboard
+1. Enable Metrics Addon using the following command `minikube addons enable metrics-server`.
+2. Start Dashboard using this command `minikube dashboard`.
