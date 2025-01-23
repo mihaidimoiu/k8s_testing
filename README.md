@@ -62,3 +62,13 @@
 3. Get deployment: `kubectl get deployment <deployment_name> -o wide`.
 4. Create a debug copy of the app: `kubectl debug myapp --it --copy-to=myapp-debug --container=myapp -sh`.
 5. Connect to a pod: `kubectl exec <pod_name> -it -- sh`.
+
+# RBAC:
+1. Follow this [Link](https://blog.kubesimplify.com/kubernetes-access-control-with-authentication-authorization-admission-control).
+2. Files in *./rbac* folder, are using development instead of marketing.
+3. *role.yaml* and *role-binding.yaml* are used for user to have permission to use *kubectl*.
+4. *role-service-account.yaml* and *role-binding-service-account.yaml* are used for kubelet to have permission to create execute commands, like cURL.
+5. Security Context can be set at level of pod (all containers inside pod will inherit), or it can be set at container level and overrides the pod, but it won't exceed the baseline (the maximum level of security from the pod).
+
+# Resource Quotas
+Those are tied to namespace level. Ex: namespace dev, when used, it can limit everything, like max pods. This is an admission controller.
