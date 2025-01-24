@@ -1,0 +1,20 @@
+# Network Policy
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: mongodb-deployment-netpol
+spec:
+  podSelector: 
+    matchLabels:
+      app: mongodb-deployment
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          app: flask-deployment
+          version: blue
+    ports:
+    - protocol: TCP
+      port: 27017

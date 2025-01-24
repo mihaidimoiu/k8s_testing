@@ -72,3 +72,8 @@
 
 # Resource Quotas
 Those are tied to namespace level. Ex: namespace dev, when used, it can limit everything, like max pods. This is an admission controller.
+
+# Ingress & Egress
+1. By default, in minikube network policies do **NOT** work! You have to enable them manually when minikube starts by using this command `minikube start --network-plugin=cni --cni=calico`.
+2. If some of your pods work with DNS resolutions and you block everything in egress, it won't work. For example flask app it cannot start because init container will try to connect to mongodb-service on port 27017. To make it work, you have to allow egress to port 53, with pod selector kube-dns, and in namespace kube-system.
+ 
