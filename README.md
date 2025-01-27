@@ -76,4 +76,12 @@ Those are tied to namespace level. Ex: namespace dev, when used, it can limit ev
 # Ingress & Egress
 1. By default, in minikube network policies do **NOT** work! You have to enable them manually when minikube starts by using this command `minikube start --network-plugin=cni --cni=calico`.
 2. If some of your pods work with DNS resolutions and you block everything in egress, it won't work. For example flask app it cannot start because init container will try to connect to mongodb-service on port 27017. To make it work, you have to allow egress to port 53, with pod selector kube-dns, and in namespace kube-system.
- 
+3. For controllers, you need to use `minikube addons enable ingress`.
+4. To test from the browser, you need to use `minikube tunnel` in order to make a tunnel from host to docker.
+5. After creating the tunnel, you can resolve the URL or you can add it to `/etc/hosts` like this: `127.0.0.1 example.cafe.com`.
+
+## Ingress & Ingress Controller
+Follow this [Link](https://kubernetes.io/docs/tasks/access-application-cluster/ingress-minikube/)
+
+## Gateway & Gateway API
+Follow this [Link](https://blog.nashtechglobal.com/hands-on-kubernetes-gateway-api-with-nginx-gateway-fabric/)
